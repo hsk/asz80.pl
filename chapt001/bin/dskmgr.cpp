@@ -894,6 +894,7 @@ static int rm(const char* dsk, char* path)
 
 int main(int argc, char* argv[])
 {
+    memset(diskImage, 0, sizeof(diskImage));
     if (!isLittleEndian()) {
         puts("Sorry, this program is executable only little-endian environment.");
         return 255;
