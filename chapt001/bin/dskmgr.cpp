@@ -146,6 +146,7 @@ static void showUsage(int bit)
 static const unsigned char* now()
 {
     static unsigned char buf[4] = {0, 0, 0, 0};
+    /*
     if (0 == buf[0] && 0 == buf[1] && 0 == buf[2] && 0 == buf[3]) {
         time_t t1 = time(nullptr);
         struct tm* t2 = localtime(&t1);
@@ -157,7 +158,7 @@ static const unsigned char* now()
         buf[2] |= (t2->tm_mday) & 0b00011111;
         buf[3] = ((t2->tm_year - 80) & 0b01111111) << 1;
         buf[3] |= ((t2->tm_mon + 1) & 0b00001000) >> 3;
-    }
+    }*/
     return buf;
 }
 
@@ -292,7 +293,6 @@ static void extractBootSectorFromDisk()
 
 static void extractBootSectorToDisk()
 {
-    memset(&diskImage[0][0],0,512);
     memcpy(&diskImage[0][0x00], &boot.bootJump, 3);
     memcpy(&diskImage[0][0x03], &boot.oemName, 8);
     memcpy(&diskImage[0][0xB], &boot.sectorSize, 2);
@@ -698,13 +698,13 @@ static int create(const char* dskPath)
     memcpy(boot.bootJump2, bootJump2, 2);
     memcpy(boot.idLabel, "VOL_ID", 6);
     boot.dirtyFlag = 0x36;
-    if (0 == boot.idValue[0]) {
+    /*if (0 == boot.idValue[0]) {
         // 未設定の場合は乱数を設定 (put/rm向けに設定済みの場合は維持)
-        boot.idValue[0] = 0x01;
-        boot.idValue[1] = 0;
-        boot.idValue[2] = 0;
-        boot.idValue[3] = 0;
-    }
+        boot.idValue[0] = 0x01 | (rand() & 0xFE);
+        boot.idValue[1] = rand() & 0xeF;
+        boot.idValue[2] = rand() & 0xFF;
+        boot.idValue[3] = rand() & 0xFF;
+    }*/
     memset(boot.reserved, 0, 5);
     memcpy(boot.bootProgram, dos1, sizeof(dos1)); // 暫定的にDOS1のブートプログラムを設定
     extractBootSectorToDisk();
@@ -895,11 +895,6 @@ static int rm(const char* dsk, char* path)
 
 int main(int argc, char* argv[])
 {
-    memset(diskImage, 0, sizeof(diskImage));
-    memset(&boot, 0, sizeof(boot));
-    memset(&fat, 0, sizeof(fat));
-    memset(&dir, 0, sizeof(dir));
-    memset(&cfi, 0, sizeof(cfi));
     if (!isLittleEndian()) {
         puts("Sorry, this program is executable only little-endian environment.");
         return 255;
