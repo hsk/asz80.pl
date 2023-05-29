@@ -13,7 +13,7 @@ TARGET			=	usr
 all: $(TARGET).bin
 	openmsx -machine Sanyo_PHC-70FD -diska disk
 
-$(TARGET).bin: $(TARGET).ihx
+$(TARGET).bin: $(TARGET).ihx bin/ihx2bload
 	bin/ihx2bload objects/$(TARGET).ihx -o disk/$(TARGET).bin
 
 $(TARGET).ihx: $(OBJS)
@@ -21,6 +21,9 @@ $(TARGET).ihx: $(OBJS)
 
 %.rel: %.s
 	sdasz80 -o objects/$@ src/$*.s
+
+bin/ihx2bload: bin/ihx2bload.cpp bin/basic.hpp
+	cd bin; g++ ihx2bload.cpp -o ihx2bload
 
 bin/dskmgr: bin/dskmgr.cpp bin/basic.hpp
 	cd bin; g++ dskmgr.cpp -o dskmgr
