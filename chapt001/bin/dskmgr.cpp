@@ -292,6 +292,7 @@ static void extractBootSectorFromDisk()
 
 static void extractBootSectorToDisk()
 {
+    memset(&diskImage[0][0],0,512);
     memcpy(&diskImage[0][0x00], &boot.bootJump, 3);
     memcpy(&diskImage[0][0x03], &boot.oemName, 8);
     memcpy(&diskImage[0][0xB], &boot.sectorSize, 2);
@@ -699,10 +700,10 @@ static int create(const char* dskPath)
     boot.dirtyFlag = 0x36;
     if (0 == boot.idValue[0]) {
         // 未設定の場合は乱数を設定 (put/rm向けに設定済みの場合は維持)
-        boot.idValue[0] = 0x01 | (rand() & 0xFE);
-        boot.idValue[1] = rand() & 0xFF;
-        boot.idValue[2] = rand() & 0xFF;
-        boot.idValue[3] = rand() & 0xFF;
+        boot.idValue[0] = 0x01;
+        boot.idValue[1] = 0;
+        boot.idValue[2] = 0;
+        boot.idValue[3] = 0;
     }
     memset(boot.reserved, 0, 5);
     memcpy(boot.bootProgram, dos1, sizeof(dos1)); // 暫定的にDOS1のブートプログラムを設定
@@ -895,6 +896,10 @@ static int rm(const char* dsk, char* path)
 int main(int argc, char* argv[])
 {
     memset(diskImage, 0, sizeof(diskImage));
+    memset(&boot, 0, sizeof(boot));
+    memset(&fat, 0, sizeof(fat));
+    memset(&dir, 0, sizeof(dir));
+    memset(&cfi, 0, sizeof(cfi));
     if (!isLittleEndian()) {
         puts("Sorry, this program is executable only little-endian environment.");
         return 255;
