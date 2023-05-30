@@ -28,7 +28,6 @@ bin/ihx2bload: bin/ihx2bload.cpp bin/basic.hpp
 bin/dskmgr: bin/dskmgr.cpp bin/basic.hpp
 	cd bin; g++ dskmgr.cpp -o dskmgr
 dsk: $(TARGET).bin bin/dskmgr
-	rm -f objects/usr.dsk
 	./bin/dskmgr objects/usr.dsk create disk/*
 rundsk: dsk
 	openmsx -machine Sanyo_PHC-70FD -diska objects/usr.dsk
