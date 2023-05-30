@@ -1,7 +1,10 @@
 	org(0xc000).
+	equ('GTSTCK',0x00D5).
 	inc(hl).
 	inc(hl).
+	push(hl).
 	ld(a,[hl]).
-	inc(a).
+	call('GTSTCK').
+	pop(hl).
 	ld([hl],a).
 	ret.
